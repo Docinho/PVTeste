@@ -22,17 +22,19 @@ public class RBTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements R
 
 	public int blackHeight(RBNode<T> node) {
 		int retorno = 0;
-		if (node.getColour().equals(Colour.BLACK) || (node.getRight() == null && node.getLeft() == null))
-			retorno = 1;
-		else if (node.isLeaf())
-			retorno += Math.max(blackHeight((RBNode<T>) node.getLeft()), blackHeight((RBNode<T>) node.getRight()));
+		if (node != null && !node.isEmpty()) {
+			if (node.getColour().equals(Colour.BLACK))
+				retorno = 1;
 
+			retorno += Math.max(blackHeight((RBNode<T>) node.getLeft()), blackHeight((RBNode<T>) node.getRight()));
+		}
 		return retorno;
 	}
 
 	protected boolean verifyProperties() {
-		boolean resp = verifyNodesColour() && verifyNILNodeColour() && verifyRootColour() && verifyChildrenOfRedNodes()
-				&& verifyBlackHeight();
+		boolean resp = verifyNodesColour() && verifyNILNodeColour() && verifyRootColour();
+		resp = resp && verifyChildrenOfRedNodes();
+		resp = resp && verifyBlackHeight();
 
 		return resp;
 	}
@@ -70,15 +72,15 @@ public class RBTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements R
 	}
 
 	public boolean verifyChildrenOfRedNodes(RBNode<T> node) {
-		boolean children = false;
-		if (node.isEmpty())
+		boolean children = true;
+		if (node == null || node.isEmpty())
 			children = true;
 		else {
 			if (node.isLeaf() || node.getColour().equals(Colour.RED))
 				children = ((RBNode) node.getRight()).getColour().equals(Colour.BLACK)
 						&& ((RBNode) node.getLeft()).getColour().equals(Colour.BLACK);
-			else
-				children = verifyChildrenOfRedNodes((RBNode<T>) node.getLeft())
+			if (!node.isLeaf())
+				children = children && verifyChildrenOfRedNodes((RBNode<T>) node.getLeft())
 						&& verifyChildrenOfRedNodes((RBNode<T>) node.getRight());
 
 		}
@@ -99,12 +101,14 @@ public class RBTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements R
 
 	public boolean verifyBlackHeight(RBNode<T> node) {
 		boolean height = false;
-
+		
+		if (node != null) {
 		if (node.isEmpty())
 			height = true;
 		else
-			height = Math.abs(this.blackHeight((RBNode<T>) node.getLeft()) - this.blackHeight((RBNode<T>) node.getRight())) <= 1;
-
+			height = 
+					this.blackHeight((RBNode<T>) node.getLeft()) == this.blackHeight((RBNode<T>) node.getRight());
+		}
 		return height;
 	}
 
@@ -172,7 +176,8 @@ public class RBTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements R
 			((RBNode) (grandpa.getLeft())).setColour(Colour.BLACK);
 			grandpa.setColour(Colour.RED);
 			this.fixUpCase1(grandpa);
-		}
+		} else
+			fixUpCase4(node);
 
 	}
 
@@ -185,12 +190,14 @@ public class RBTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements R
 			rightRotation((RBNode<T>) node.getParent());
 		else if (!isLeftChild(node) && isLeftChild((RBNode<T>) node.getParent()))
 			leftRotation((RBNode<T>) node.getParent());
+		fixUpCase5(node);
 	}
 
 	public void leftRotation(RBNode<T> node) {
 		RBNode right = (RBNode) node.getRight();
 		// changes the node's right
 		node.setRight(node.getRight().getLeft());
+		if(node.getRight() != null)
 		node.getRight().setParent(node);
 
 		// chages the right's parent
@@ -199,7 +206,8 @@ public class RBTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements R
 				node.getParent().setLeft(right);
 			else
 				node.getParent().setRight(right);
-		}
+		} else
+			this.root = right;
 		right.setParent(node.getParent());
 
 		// changes node's parent
@@ -209,9 +217,10 @@ public class RBTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements R
 	}
 
 	public void rightRotation(RBNode<T> node) {
-		RBNode left = (RBNode) node.getRight();
+		RBNode left = (RBNode) node.getLeft();
 		// changes node's left
 		node.setLeft(left.getRight());
+		if(node.getLeft()!= null)
 		node.getLeft().setParent(node);
 
 		// chages left's parent
@@ -220,15 +229,22 @@ public class RBTreeImpl<T extends Comparable<T>> extends BSTImpl<T> implements R
 				node.getParent().setLeft(left);
 			else
 				node.getParent().setRight(left);
-		}
+		} else
+			this.root = left;
+
 		left.setParent(node.getParent());
-		
-		//changes node's parent
+
+		// changes node's parent
 		node.setParent(left);
 		left.setRight(node);
 	}
 
 	protected void fixUpCase5(RBNode<T> node) {
+		if (node.getParent().getParent() != null)
+			((RBNode) node.getParent()).setColour(Colour.BLACK);
+		if (!node.getParent().getParent().isEmpty() && node.getParent().getParent() != null)
+		((RBNode) node.getParent().getParent()).setColour(Colour.RED);
+
 		if (isLeftChild(node))
 			rightRotation((RBNode<T>) node.getParent());
 		else
