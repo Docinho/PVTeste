@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2017-03-20T14:43:58.612-0300</date>
+  <logger>JOAO MAURICIO ALVES VALVERDE CARVALHO</logger>
+  <level>FINE</level>
+  <message>File 115211593-JOAO MAURICIO ALVES VALVERDE CARVALHO.zip was received. It was sent by JOAO MAURICIO ALVES VALVERDE CARVALHO from IP 192.168.25.192</message>
+</record>
+</log>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2017-03-20T19:38:31.545-0300</date>
+  <logger>JOAO MAURICIO ALVES VALVERDE CARVALHO</logger>
+  <level>FINE</level>
+  <message>File 115211593-JOAO MAURICIO ALVES VALVERDE CARVALHO.zip was received. It was sent by JOAO MAURICIO ALVES VALVERDE CARVALHO from IP 192.168.25.192</message>
+</record>
